@@ -1,0 +1,135 @@
+/* src/pages/Modal.css */
+.ai-interact-chrome-extension-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .ai-interact-chrome-extension-modal {
+    position: relative;
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 20px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+  }
+  
+  .ai-interact-chrome-extension-modal-content {
+    position: relative;
+  }
+  
+  .ai-interact-chrome-extension-closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background-color: transparent;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  #ai-interact-chrome-extension-textarea {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 10px;
+    resize: none;
+  }
+
+  /* src/pages/Settings.css */
+.ai-interact-chrome-extension-settings {
+    padding: 20px;
+  }
+  
+  .ai-interact-chrome-extension-apikey {
+    margin-bottom: 20px;
+  }
+  
+  .ai-interact-chrome-extension-apikey label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .ai-interact-chrome-extension-apikey input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+    font-size: 14px;
+  }
+  
+  .ai-interact-chrome-extension-conversations {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .ai-interact-chrome-extension-conversations li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .ai-interact-chrome-extension-conversations li:last-child {
+    border-bottom: none;
+  }
+  
+  .ai-interact-chrome-extension-conversations button {
+    background-color: #f44336;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  /* src/components/Conversation.css */
+.ai-interact-chrome-extension-conversation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .ai-interact-chrome-extension-conversation:last-child {
+    border-bottom: none;
+  }
+  
+  .ai-interact-chrome-extension-conversation-title {
+    background-color: #2196f3;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    flex-grow: 1;
+  }
+  
+  .ai-interact-chrome-extension-conversation-delete {
+    background-color: #f44336;
+    color: #fff;
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  
+  .ai-interact-chrome-extension-conversations {
+    padding: 20px;
+  }
+  
+  .ai-interact-chrome-extension-conversation-list {
+    list-style-type: none;
+    padding: 0;
+  }
