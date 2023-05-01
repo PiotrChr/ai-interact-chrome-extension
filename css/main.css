@@ -1,15 +1,15 @@
 /* src/pages/Modal.css */
 .ai-interact-chrome-extension-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
   }
   
   .ai-interact-chrome-extension-modal {
@@ -17,13 +17,29 @@
     background-color: #fff;
     border-radius: 4px;
     padding: 20px;
+    width: 80%; /* Change this value to set the width of the modal */
     max-width: 90%;
     max-height: 90%;
     overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Add shadow to the modal */
+    border: 1px solid rgba(0, 0, 0, 0.2); /* Add border to the modal */
   }
   
+  .ai-interact-chrome-extension-modal-body {
+    position: relative;
+  }
+
   .ai-interact-chrome-extension-modal-content {
     position: relative;
+  }
+
+  .ai-interact-chrome-extension-modal-message pre {
+    font-family: math;
+  }
+
+  .ai-role-user pre {
+    margin: 10px 0px;
+    font-weight: bold;
   }
   
   .ai-interact-chrome-extension-closeButton {
@@ -34,6 +50,7 @@
     background-color: transparent;
     font-size: 24px;
     cursor: pointer;
+    z-index: 2;
   }
   
   #ai-interact-chrome-extension-textarea {

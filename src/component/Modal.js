@@ -1,16 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { initiateConversation, createRandomUuidConversationName, continueConversation } from '../conversationManager'
+import classNames from 'classnames';
 
-const Modal = ({ selectedText }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [inputText, setInputText] = useState('');
-  const [responseText, setResponseText] = useState('');
 
+const Modal = ({ selectedText, initialConversationName = null }) => {
+    const [conversationName, setConversationName] = useState(initialConversationName);
+    const [isOpen, setIsOpen] = useState(false);
+    const [inputText, setInputText] = useState('');
+    const [conversation, setConversation] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [currentSelectedText, setCurrentSelectedText] = useState('');
+  
   useEffect(() => {
-    if (selectedText) {
-      setInputText(selectedText);
-      setIsOpen(true);
-    }
+    const handleMessage = async (request, sender, sendResponse) => {
+        if (request.action === 'interact') {
+            if (request.text !== currentSelectedText && request.text !== '') {
+                setCurrentSelectedText(request.text);
+            }
+            if (conversation.length === 0) {
+                await bootstrap(request.text);
+            }
+        }
+    };
+
+    chrome.runtime.onMessage.addListener(handleMessage);
+    
+    return () => {
+        chrome.runtime.onMessage.removeListener(handleMessage);
+    };
   }, [selectedText]);
+
+  const bootstrap = async (selectedText) => {
+    setIsLoading(true);
+    if (!initialConversationName) {
+        setConversationName(createRandomUuidConversationName());
+    }
+
+    if (selectedText) {
+        let conversation = await initiateConversation(selectedText, conversationName);
+        setIsLoading(false);
+        setConversation(conversation);
+    }
+  };
 
   const handleOpen = (selectedText) => {
     setInputText(selectedText);
@@ -21,23 +52,61 @@ const Modal = ({ selectedText }) => {
     setIsOpen(false);
   };
 
+  const handleTextChange = (event) => {
+    setInputText(event.target.value);
+  };
+
   const handleAPIRequest = async () => {
-    // Your logic to make API call and handle response
-    console.log('API request made');
+    setIsLoading(true);
+    try {
+        const updatedConversation = await continueConversation(inputText, conversation);
+        setConversation(updatedConversation);
+        setIsLoading(false);
+        setInputText(''); // Clear the textarea after sending the message
+      } catch (error) {
+        setIsLoading(false);
+        console.error('Error in handleAPIRequest:', error);
+      }
+  };
+3
+
+  const renderConversation = () => {
+    return (<div className="ai-interact-chrome-extension-modal-conversation">
+        { conversation.map((item, index) => {
+            return (<div key={index} className={classNames(item.role == 'user' ? 'ai-role-user' : 'ai-role-ai', 'ai-interact-chrome-extension-modal-message')}>
+                <pre>{item.content}</pre>
+            </div>);
+         }) 
+        }
+    </div>);
+  };
+
+  const renderLoading = () => {
+    return isLoading ? <div className="ai-interact-chrome-extension-loading">Loading...</div> : null;
   };
 
   return (
     isOpen && (
         <div className="ai-interact-chrome-extension-modal-overlay" onClick={handleClose}>
           <div className="ai-interact-chrome-extension-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="ai-interact-chrome-extension-modal-content">
-              <button className="ai-interact-chrome-extension-closeButton" onClick={handleClose}>
+            <button className="ai-interact-chrome-extension-closeButton" onClick={handleClose}>
                 &times;
-              </button>
-              <textarea id="ai-interact-chrome-extension-textarea" value={inputText} readOnly />
-              <button onClick={handleAPIRequest}>Get Response</button>
-              <div>{responseText}</div>
+            </button>
+            <div className="ai-interact-chrome-extension-modal-body">
+                <div className="ai-interact-chrome-extension-modal-content">
+                { renderConversation() }
+                { renderLoading() }
+                <textarea 
+                    id="ai-interact-chrome-extension-textarea"
+                    value={inputText}
+                    onChange={handleTextChange}
+                    readOnly={false}
+                />
+                <button onClick={handleAPIRequest}>Send</button>
+                <button onClick={handleClose}>Close</button>
+                </div>
             </div>
+            
           </div>
         </div>
       )

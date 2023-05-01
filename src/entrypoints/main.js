@@ -1,10 +1,19 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Main from '../pages/Main';
+import { createRoot } from 'react-dom/client';
+import Modal from '../component/Modal';
 
-ReactDOM.render(
+const aiInteractChromeRoot = document.getElementById('ai-interact-chrome-root');
+
+if (!aiInteractChromeRoot) {
+  aiInteractChromeRoot = document.createElement('div');
+  aiInteractChromeRoot.id = 'ai-interact-chrome-root';
+  document.body.appendChild(aiInteractChromeRoot);
+}
+
+const root = createRoot(aiInteractChromeRoot);
+
+root.render(
   <React.StrictMode>
-    <Main />
-  </React.StrictMode>,
-  document.getElementById('ai-interact-chrome-root')
-);
+    <Modal selectedText={selectedText}/>
+  </React.StrictMode>
+  );

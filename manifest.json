@@ -1,33 +1,36 @@
 {
     "manifest_version": 2,
-    "name": "AI Interact Chrome Extension",
+    "name": "AI Interact",
     "version": "1.0",
     "description": "A Chrome Extension to interact with AI.",
     "permissions": ["contextMenus", "storage"],
-    "options_page": "settings.html",
+    "options_page": "html/settings.html",
     "background": {
       "scripts": [
-        "build/main.bundle.js"
+        "build/background.bundle.js"
     ],
       "persistent": false
     },
     "content_scripts": [
       {
-        "matches": ["*://*./*"],
+        "matches": [
+            "http://*/*",
+            "https://*/*"
+        ],
         "js": ["build/main.bundle.js"],
         "css": ["css/main.css"]
       }
     ],
     "icons": {
-      "16": "resources/icon_16.png",
-      "48": "resources/icon_48.png",
-      "128": "resources/icon_128.png"
+      "16": "resources/icon_16_v2.png",
+      "48": "resources/icon_48_v2.png",
+      "128": "resources/icon_128_v2.png"
     },
     "browser_action": {
         "default_icon": {
-          "16": "resources/icon16.png",
-          "48": "resources/icon48.png",
-          "128": "resources/icon128.png"
+          "16": "resources/icon_16_v2.png",
+          "48": "resources/icon_48_v2.png",
+          "128": "resources/icon_128_v2.png"
         },
         "default_popup": "html/popup.html"
   }

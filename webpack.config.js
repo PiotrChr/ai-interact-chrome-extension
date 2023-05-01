@@ -2,39 +2,40 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = {
-    entry: {
-        settings: './src/entrypoints/settings.js',
-        main: './src/entrypoints/main.js',
-        background: './src/entrypoints/background.js',
-    },
-    output: {
-        path: path.resolve(__dirname, 'build'),
-        filename: '[name].bundle.js',
-    },
-  module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
+module.exports = (env, argv) => {
+    const isDevelopment = argv.mode === 'development';
+    
+    return {
+        mode: isDevelopment ? 'development' : 'production',
+        devtool: isDevelopment ? 'cheap-module-source-map' : 'source-map',
+        entry: {
+            settings: './src/entrypoints/settings.js',
+            main: './src/entrypoints/main.js',
+            background: './src/entrypoints/background.js',
+            popup: './src/entrypoints/popup.js',
         },
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
-    ],
-  },
-  resolve: {
-    extensions: ['.js', '.jsx'],
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-        template: './html/popup.html',
-        filename: './html/popup.html',
-        chunks: [],
-      }),
-  ]
+        output: {
+            path: path.resolve(__dirname, 'build'),
+            filename: '[name].bundle.js',
+        },
+        module: {
+            rules: [
+            {
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                use: {
+                loader: 'babel-loader',
+                },
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
+            },
+            ],
+        },
+        resolve: {
+            extensions: ['.js', '.jsx'],
+        },
+        plugins: []
+    }
 };
