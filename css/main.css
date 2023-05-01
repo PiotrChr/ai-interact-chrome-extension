@@ -1,3 +1,5 @@
+@import './bulma.css';
+
 /* src/pages/Modal.css */
 .ai-interact-chrome-extension-modal-overlay {
   position: fixed;
@@ -150,3 +152,22 @@
     list-style-type: none;
     padding: 0;
   }
+
+  .spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-top-color: #3273dc;
+    animation: spin 1s infinite linear;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  

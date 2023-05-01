@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import Modal from '../component/Modal';
 
-const aiInteractChromeRoot = document.getElementById('ai-interact-chrome-root');
+let aiInteractChromeRoot = document.getElementById('ai-interact-chrome-root');
 
 if (!aiInteractChromeRoot) {
   aiInteractChromeRoot = document.createElement('div');
@@ -14,6 +14,6 @@ const root = createRoot(aiInteractChromeRoot);
 
 root.render(
   <React.StrictMode>
-    <Modal selectedText={selectedText}/>
+    <Modal selectedText={''}/>
   </React.StrictMode>
   );

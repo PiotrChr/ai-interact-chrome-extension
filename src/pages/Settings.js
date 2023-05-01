@@ -71,37 +71,39 @@ const Settings = () => {
 
   return (
     <div className="ai-interact-chrome-extension-settings">
-      <h1>Settings</h1>
-      <div className="ai-interact-chrome-extension-apikey">
-        <label htmlFor="ai-interact-chrome-extension-apikey-input">OpenAI API Key</label>
-        <input
-          id="ai-interact-chrome-extension-apikey-input"
-          type="text"
-          value={apiKey}
-          onChange={handleApiKeyChange}
-        />
-        <button onClick={handleSaveApiKey}>Save API Key</button>
-      </div>
-      <div className="ai-interact-chrome-extension-orgId">
-        <label htmlFor="ai-interact-chrome-extension-orgId-input">OpenAI Org ID</label>
-        <input
-          id="ai-interact-chrome-extension-apikey-input"
-          type="text"
-          value={orgId}
-          onChange={handleOrgIdChange}
-        />
-        <button onClick={handleSaveOrgId}>Save Org Id</button>
-      </div>
-      <h2>Saved Conversations</h2>
-      <ul className="ai-interact-chrome-extension-conversations">
-        {conversations.map((conversation, index) => (
-          <li key={index}>
-            <span>{conversation.title}</span>
-            <button onClick={() => handleRemoveConversation(index)}>Remove</button>
-          </li>
-        ))}
-      </ul>
+    <h1 className="ai-interact-bulma-title">Settings</h1>
+    <div className="ai-interact-chrome-extension-apikey ai-interact-bulma-field">
+      <label htmlFor="ai-interact-chrome-extension-apikey-input" className="ai-interact-bulma-label">OpenAI API Key</label>
+      <input
+        id="ai-interact-chrome-extension-apikey-input"
+        className="ai-interact-bulma-input"
+        type="text"
+        value={apiKey}
+        onChange={handleApiKeyChange}
+      />
+      <button className="ai-interact-bulma-button ai-interact-bulma-is-primary" onClick={handleSaveApiKey}>Save API Key</button>
     </div>
+    <div className="ai-interact-chrome-extension-orgId ai-interact-bulma-field">
+      <label htmlFor="ai-interact-chrome-extension-orgId-input" className="label">OpenAI Org ID</label>
+      <input
+        id="ai-interact-chrome-extension-orgId-input"
+        className="ai-interact-bulma-input"
+        type="text"
+        value={orgId}
+        onChange={handleOrgIdChange}
+      />
+      <button className="ai-interact-bulma-button ai-interact-bulma-is-primary" onClick={handleSaveOrgId}>Save Org Id</button>
+    </div>
+    <h2 className="ai-interact-bulma-subtitle">Saved Conversations</h2>
+    <ul className="ai-interact-chrome-extension-conversations">
+      {conversations.map((conversation, index) => (
+        <li key={index} className="ai-interact-bulma-block">
+          <span>{conversation.title}</span>
+          <button className="ai-interact-bulma-button ai-interact-bulma-is-danger ai-interact-bulma-is-light ai-interact-bulma-is-small" onClick={() => handleRemoveConversation(index)}>Remove</button>
+        </li>
+      ))}
+    </ul>
+  </div>
   );
 };
 

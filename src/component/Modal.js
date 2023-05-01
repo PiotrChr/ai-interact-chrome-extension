@@ -12,12 +12,19 @@ const Modal = ({ selectedText, initialConversationName = null }) => {
     const [currentSelectedText, setCurrentSelectedText] = useState('');
   
   useEffect(() => {
+    
     const handleMessage = async (request, sender, sendResponse) => {
         if (request.action === 'interact') {
+            setIsOpen(true);
+
             if (request.text !== currentSelectedText && request.text !== '') {
+                console.log('new text');
                 setCurrentSelectedText(request.text);
             }
-            if (conversation.length === 0) {
+            console.log('conversation', conversation);
+            console.log('conversation.length', conversation.length);
+            if (conversation.length === 0 && request.text !== '') {
+                console.log('bootstrap');
                 await bootstrap(request.text);
             }
         }
@@ -82,31 +89,45 @@ const Modal = ({ selectedText, initialConversationName = null }) => {
   };
 
   const renderLoading = () => {
-    return isLoading ? <div className="ai-interact-chrome-extension-loading">Loading...</div> : null;
+    return isLoading ? (
+        <div className="ai-interact-chrome-extension-loading">
+          <p>Just a moment, I'm thinking...</p>
+          <div className="spinner"></div>
+        </div>
+      ) : null;
   };
 
   return (
     isOpen && (
-        <div className="ai-interact-chrome-extension-modal-overlay" onClick={handleClose}>
-          <div className="ai-interact-chrome-extension-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="ai-interact-chrome-extension-closeButton" onClick={handleClose}>
-                &times;
-            </button>
-            <div className="ai-interact-chrome-extension-modal-body">
-                <div className="ai-interact-chrome-extension-modal-content">
-                { renderConversation() }
-                { renderLoading() }
-                <textarea 
+        <div className="ai-interact-chrome-extension-modal-overlay ai-interact-bulma-modal ai-interact-bulma-is-active" onClick={handleClose}>
+          <div className="ai-interact-chrome-extension-modal ai-interact-bulma-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content">
+              <button className="ai-interact-chrome-extension-closeButton ai-interact-bulma-delete" onClick={handleClose}></button>
+              <div className="ai-interact-chrome-extension-modal-body ai-interact-bulma-modal-card">
+                <div className="ai-interact-chrome-extension-modal-content ai-interact-bulma-modal-card-body">
+                  {renderConversation()}
+                  {renderLoading()}
+                  <textarea
                     id="ai-interact-chrome-extension-textarea"
+                    className="ai-interact-bulma-textarea"
                     value={inputText}
                     onChange={handleTextChange}
                     readOnly={false}
-                />
-                <button onClick={handleAPIRequest}>Send</button>
-                <button onClick={handleClose}>Close</button>
+                  />
+                  <div className="ai-interact-bulma-field ai-interact-bulma-is-grouped">
+                    <p className="ai-interact-bulma-control">
+                      <button className="ai-interact-bulma-button ai-interact-bulma-is-primary" onClick={handleAPIRequest}>Send</button>
+                    </p>
+                    <p className="control">
+                      <button className="ai-interact-bulma-button ai-interact-bulma-is-warning" onClick={handleClose}>Close</button>
+                    </p>
+                    <p className="control">
+                      <button className="ai-interact-bulma-button ai-interact-bulma-is-info" onClick={handleClose}>Save conversation</button>
+                    </p>
+                  </div>
                 </div>
+              </div>
             </div>
-            
           </div>
         </div>
       )

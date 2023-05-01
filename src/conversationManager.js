@@ -62,6 +62,9 @@ export const getSavedConversations = async (conversationName) => {
     });
 };
 
+export const getAllSavedConversations = async () => {
+}        
+
 export const createRandomUuidConversationName = () => {
     return uuidv4();
 }

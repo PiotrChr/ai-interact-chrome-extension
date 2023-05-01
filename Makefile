@@ -1,10 +1,13 @@
 .PHONY: build zip clean
 NAME=ai-interact-chrome-extension
 
-build:
+build: build_sass
 	npm run build
 
-build_dev:
+build_sass:
+	npm run buildsass
+
+build_dev: build_sass
 	npm run builddev
 
 zip: build
