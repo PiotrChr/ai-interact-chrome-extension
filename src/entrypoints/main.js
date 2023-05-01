@@ -1,27 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Main from './pages/Main';
-
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.contextMenus.create({
-        id: "interact",
-        title: "Interact",
-        contexts: ["selection"]
-    });
-});
-
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === 'interact') {
-      chrome.tabs.sendMessage(tab.id, {
-        action: 'interact',
-        text: info.selectionText,
-      });
-    }
-  });
+import Main from '../pages/Main';
 
 ReactDOM.render(
   <React.StrictMode>
     <Main />
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById('ai-interact-chrome-root')
 );

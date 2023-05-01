@@ -4,11 +4,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
-        settings: './src/settings.js',
-        main: './src/main.js',
+        settings: './src/entrypoints/settings.js',
+        main: './src/entrypoints/main.js',
+        background: './src/entrypoints/background.js',
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'build'),
         filename: '[name].bundle.js',
     },
   module: {
@@ -31,14 +32,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-        template: './public/popup.html',
-        filename: 'popup.html',
-        chunks: [], // Exclude JS files from being included in the output
+        template: './html/popup.html',
+        filename: './html/popup.html',
+        chunks: [],
       }),
-  ],
-  devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    compress: true,
-    port: 3000,
-  },
+  ]
 };

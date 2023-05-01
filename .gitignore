@@ -10,6 +10,7 @@
 
 # production
 /build
+ai-interact-chrome-extension.zip
 
 # misc
 .DS_Store

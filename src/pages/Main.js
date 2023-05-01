@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from './Modal';
+import Modal from './../component/Modal';
 
 const Main = () => {
   const [selectedText, setSelectedText] = useState(null);
