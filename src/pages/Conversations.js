@@ -1,44 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import Modal from '../components/Modal';
-import Conversation from '../components/Conversation';
-import { getSavedConversations } from '../conversationManager';
-import './.Conversations.css';
+import { ModalContainer } from '../component/ModalContainer';
+import { Navbar } from '../component/Navbar';
+import Conversation from '../component/Conversation';
+import { getAllSavedConversations, removeConversation } from '../conversationManager';
 
 const Conversations = () => {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
 
   useEffect(() => {
-    setConversations(getSavedConversations());
+    const fetchAll = async () => {
+      setConversations(await getAllSavedConversations());
+    };
+
+    fetchAll();
   }, []);
 
   const handleClick = (conversation) => {
     setSelectedConversation(conversation);
+    // open modal and pass conversation as prop
   };
 
   const handleCloseModal = () => {
     setSelectedConversation(null);
   };
 
+  const handleRemoveConversation = async (url) => {
+    await removeConversation(url);
+    setConversations(await getAllSavedConversations());
+  };
+
   return (
-    <div className="my-extension-conversations">
-      <h1>Conversations</h1>
-      <div className="my-extension-conversation-list">
-        {conversations.map((conversation, index) => (
-          <Conversation
-            key={index}
-            title={conversation.title}
-            onClick={() => handleClick(conversation)}
-            onDelete={() => {}}
-          />
-        ))}
+    <div className="ai-interact-bulma container">
+      <Navbar />
+      <div className="ai-interact-chrome-extension-conversations">
+        <h1 className="ai-interact-bulma title">Conversations</h1>
+        <div className="ai-interact-chrome-extension-conversation-list ai-interact-bulma column columns is-multiline">
+          {conversations.map((conversation, index) => (
+            <div className="ai-interact-bulma  column is-one-third" key={index}>
+              <Conversation
+                title={conversation.title}
+                url={conversation.url}
+                onClick={() => handleClick(conversation)}
+                onDelete={() => {handleRemoveConversation(conversation.url)}}
+              />
+            </div>
+          ))}
+        </div>
+        { <ModalContainer _conversation={selectedConversation} /> }
       </div>
-      {selectedConversation && (
-        <Modal
-          selectedText={selectedConversation.text}
-          onClose={handleCloseModal}
-        />
-      )}
     </div>
   );
 };

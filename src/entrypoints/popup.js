@@ -1,2 +1,2 @@
-console.log(chrome.runtime.id);
 document.getElementById('settings-link').href = `chrome-extension://${chrome.runtime.id}/html/settings.html`;
+document.getElementById('conversations-link').href = `chrome-extension://${chrome.runtime.id}/html/conversations.html`;

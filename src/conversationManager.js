@@ -6,7 +6,7 @@ const STORAGE_PREFIX = 'ai_interact_';
 
 const PART_END = 'Part-done';
 const CONVERSATION_END = 'Done-Done';
-const MAX_WORD_LENGTH = 100; // or any value you prefer
+const MAX_WORD_LENGTH = 500;
 
 const INITIALIZING_PROMPT = {
     role: "user",
@@ -14,17 +14,16 @@ const INITIALIZING_PROMPT = {
   };
 const FINAL_PROMPT = {
     role: "user",
-    content: CONVERSATION_END + "\n I'm done with inserting the whole text. \n We can start the conversation now. Don't confirm anything but reply by quickly summarizing what you've read in a few bullet points and then ask me what I'd like to know more about the contents. Start with 'From the text you provided...'",
+    content: "I'm done with inserting the whole text. \n We can start the conversation now. Don't confirm anything but reply by quickly summarizing what you've read in a few bullet points and then ask me what I'd like to know more about the contents. Start with 'From the text you provided...'",
 };
 
 const createPrompt = (text, index, final = false) => {
     return {
       role: "user",
-      content: `Part ${index + 1} of ${final ? "final" : ""} text: ${text}\nPart-done\n`,
+      content: `Part ${index + 1} of ${final ? "final" : ""} text: ${text}\n${final ? CONVERSATION_END : PART_END}\n${final ? FINAL_PROMPT.content : ""}`,
     };
 };
   
-
 export const saveApiKey = async (apiKey) => {
     await new Promise((resolve) => {
         chrome.storage.local.set({ [STORAGE_PREFIX + 'apiKey']: apiKey }, resolve);
@@ -48,31 +47,88 @@ export const getSavedOrgId = async () => {
 export const getSavedApiKey = async () => {
     return new Promise((resolve) => {
         chrome.storage.local.get([STORAGE_PREFIX + 'apiKey'], (result) => {
-        resolve(result[STORAGE_PREFIX + 'apiKey']);
+            resolve(result[STORAGE_PREFIX + 'apiKey']);
         });
     });
 };
 
-export const getSavedConversations = async (conversationName) => {
+export const getSavedConversation = async (conversationUrl) => {
+    const conversationIndex = await getConversationIndex(conversationUrl);
     return new Promise((resolve) => {
-        chrome.storage.local.get([STORAGE_PREFIX + conversationName + '_conversations'], (result) => {
-            console.log(result)
-            resolve(result[STORAGE_PREFIX + conversationName + '_conversations'] || []);
+        chrome.storage.local.get([conversationIndex], (result) => {
+            resolve(result[conversationIndex] || null);
+        });
+    });
+};
+
+export const removeConversation = async (url) => {
+    const conversationIndex = await getConversationIndex(conversationUrl);
+    return new Promise((resolve) => {
+        chrome.storage.local.remove([conversationIndex], (result) => {
+            resolve(result[conversationIndex] || []);
         });
     });
 };
 
 export const getAllSavedConversations = async () => {
-}        
+    const conversationPrefix = await getConversationIndex();
+    
+    return new Promise((resolve) => { 
+        chrome.storage.local.get(null, (result) => {
+            const conversations = Object.keys(result)
+                .filter((key) => key.startsWith(conversationPrefix))
+                .map((key) => result[key]);
+            
+            resolve(conversations);
+        });
+    });
+};            
 
 export const createRandomUuidConversationName = () => {
     return uuidv4();
 }
 
-export const saveConversation = async (conversation, conversationName) => {
-    const savedConversations = await getSavedConversations(conversationName);
-    const updatedConversations = [...savedConversations, conversation];
-    await setConversations(updatedConversations);
+const hashUrl = async (url) => {
+    // hashes using md5 and returns a string
+    const encoder = new TextEncoder();
+    const data = encoder.encode(url);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    return hash;
+}
+
+export const countWords = (conversation) => {
+    let count = 0;
+    conversation.forEach((message) => {
+        count += message.content.split(' ').length;
+    });
+    return count;
+}
+
+export const simplifyConversation = (conversation) => {
+    const simplifiedConversation = [];
+    conversation.forEach((message) => {
+        const words = message.content.split(' ');
+        const simplifiedWords = words.filter((word) => !['the', 'a', 'an'].includes(word.toLowerCase()));
+        simplifiedConversation.push({ ...message, content: simplifiedWords.join(' ') });
+    });
+    
+    return simplifiedConversation;
+}
+
+const getConversationIndex = async (conversationUrl=null) => {
+    const hash = conversationUrl ? (await hashUrl(conversationUrl)).toString() : '';
+    return STORAGE_PREFIX + "conversation_" + hash.toString();
+}
+
+export const saveConversation = async (conversation, conversationUrl, compress=false) => {
+    const conversationIndex = await getConversationIndex(conversationUrl);
+    
+    await new Promise((resolve) => {
+        chrome.storage.local.set({ [conversationIndex]: conversation }, resolve);
+    });
 };
 
 export const setConversations = async (updatedConversations, conversationName) => {
@@ -113,9 +169,10 @@ export const continueConversation = async (text, conversation) => {
     setApiKey(apiKey);
         
     try {
-        conversation.push({ role: "user", content: text });
-        const response = await chatCompletion(conversation);
-        conversation.push({ role: "assistant", content: response });
+        conversation.conversation.push({ role: "user", content: text });
+        const response = await chatCompletion(conversation.conversation);
+        conversation.conversation.push({ role: "assistant", content: response });
+        
         return conversation;
     } catch (error) {
         console.error('Error in sending last message:', error);
@@ -123,13 +180,12 @@ export const continueConversation = async (text, conversation) => {
     }
 }
 
-export const initiateConversation = async (text, conversationName) => {
+export const initiateConversation = async (text, conversationUrl, title) => {
     const parts = divideText(text);
-    const prompts = parts.map((part, index) => createPrompt(part, index, index === parts.length - 1));
+    const prompts = parts.map(
+        (part, index) => createPrompt(part, index, index === parts.length - 1)
+    );
     
-    let savedConversation = await getSavedConversations(conversationName);
-    console.log('savedConversation', savedConversation);
-
     // Set the API key before making requests
     const apiKey = await getSavedApiKey();
     if (!apiKey) {
@@ -139,19 +195,7 @@ export const initiateConversation = async (text, conversationName) => {
     setApiKey(apiKey);
     
     const conversation = [];
-    conversation.push(...savedConversation);
-
-    if (conversation.length > 0) {
-        try {
-            const response = await chatCompletion(conversation);
-            conversation.push({ role: "assistant", content: response });
-            return conversation;
-        } catch (error) {
-            console.error('Error in sending last message:', error);
-            return;
-        }
-    }
-
+   
     // Send the initializing prompt first
     try {
         conversation.push(INITIALIZING_PROMPT);
@@ -175,15 +219,10 @@ export const initiateConversation = async (text, conversationName) => {
         }
     }
 
-    // Send the final prompt
-    try {
-        conversation.push(FINAL_PROMPT);
-        const finalResponse = await chatCompletion(conversation);
-        conversation.push({ role: "assistant", content: finalResponse });
-        
-    } catch (error) {
-        console.error('Error in sending final prompt:', error);
-    }
-
-    return [conversation[conversation.length - 1]];
+    return {
+        title: title,
+        url: conversationUrl,
+        conversation: [conversation[conversation.length - 1]]
+    };
+    
 }

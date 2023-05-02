@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import {
   saveApiKey,
   getSavedApiKey,
-  getSavedConversations,
-  setConversations as setSavedConversations,
   getSavedOrgId,
   saveOrgId,
 } from '../conversationManager'
+import { Navbar } from '../component/Navbar'
 
 const Settings = () => {
   const [apiKey, setApiKey] = useState('');
@@ -14,22 +13,12 @@ const Settings = () => {
   const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
-    const fetchAll = async () => {
-      setConversations(await getSavedConversations());
-    };
-
-    const fetchOrgId = async () => {
-      setOrgId(await getSavedOrgId());
-    }
-
     const fetchApiKey = async () => {
       setApiKey(await getSavedApiKey());
     };
-
-    fetchAll()
-      .catch((err) => {
-        console.error(err);
-      });
+    const fetchOrgId = async () => {
+      setOrgId(await getSavedOrgId());
+    }
 
     fetchApiKey()
       .catch((err) => {
@@ -41,11 +30,6 @@ const Settings = () => {
         console.error(err);
       });
   }, []);
-
-  const removeConversation = (index) => {
-    const updatedConversations = conversations.filter((_, i) => i !== index);
-    setConversations(updatedConversations);
-  };
 
   const handleApiKeyChange = (event) => {
     setApiKey(event.target.value);
@@ -63,46 +47,42 @@ const Settings = () => {
     await saveOrgId(orgId);
   };
 
-  const handleRemoveConversation = async (index) => {
-    const updatedConversations = conversations.filter((_, i) => i !== index);
-    setConversations(updatedConversations);
-    await setSavedConversations(updatedConversations);
-  };
-
   return (
-    <div className="ai-interact-chrome-extension-settings">
-    <h1 className="ai-interact-bulma-title">Settings</h1>
-    <div className="ai-interact-chrome-extension-apikey ai-interact-bulma-field">
-      <label htmlFor="ai-interact-chrome-extension-apikey-input" className="ai-interact-bulma-label">OpenAI API Key</label>
-      <input
-        id="ai-interact-chrome-extension-apikey-input"
-        className="ai-interact-bulma-input"
-        type="text"
-        value={apiKey}
-        onChange={handleApiKeyChange}
-      />
-      <button className="ai-interact-bulma-button ai-interact-bulma-is-primary" onClick={handleSaveApiKey}>Save API Key</button>
-    </div>
-    <div className="ai-interact-chrome-extension-orgId ai-interact-bulma-field">
-      <label htmlFor="ai-interact-chrome-extension-orgId-input" className="label">OpenAI Org ID</label>
-      <input
-        id="ai-interact-chrome-extension-orgId-input"
-        className="ai-interact-bulma-input"
-        type="text"
-        value={orgId}
-        onChange={handleOrgIdChange}
-      />
-      <button className="ai-interact-bulma-button ai-interact-bulma-is-primary" onClick={handleSaveOrgId}>Save Org Id</button>
-    </div>
-    <h2 className="ai-interact-bulma-subtitle">Saved Conversations</h2>
-    <ul className="ai-interact-chrome-extension-conversations">
-      {conversations.map((conversation, index) => (
-        <li key={index} className="ai-interact-bulma-block">
-          <span>{conversation.title}</span>
-          <button className="ai-interact-bulma-button ai-interact-bulma-is-danger ai-interact-bulma-is-light ai-interact-bulma-is-small" onClick={() => handleRemoveConversation(index)}>Remove</button>
-        </li>
-      ))}
-    </ul>
+    <div className="ai-interact-bulma container">
+      <Navbar />
+      <div className="ai-interact-chrome-extension-settings">
+        <h1 className="ai-interact-bulma title">Settings</h1>
+        <label htmlFor="ai-interact-chrome-extension-apikey-input" className="ai-interact-bulma label">OpenAI API Key</label>
+        <div className="ai-interact-chrome-extension-apikey ai-interact-bulma field has-addons">
+            <div className="ai-interact-bulma control">
+              <input
+                id="ai-interact-chrome-extension-apikey-input"
+                className="ai-interact-bulma input"
+                type="text"
+                value={apiKey}
+                onChange={handleApiKeyChange}
+              />
+            </div>
+            <div className="ai-interact-bulma control">
+              <a className="ai-interact-bulma button ai-interact-bulma is-primary" onClick={handleSaveApiKey}>Save</a>
+            </div>
+        </div>
+        <label htmlFor="ai-interact-chrome-extension-orgId-input" className="ai-interact-bulma label">OpenAI Org ID</label>
+        <div className="ai-interact-chrome-extension-orgId ai-interact-bulma field has-addons">
+          <div className="ai-interact-bulma control">
+            <input
+              id="ai-interact-chrome-extension-orgId-input"
+              className="ai-interact-bulma input"
+              type="text"
+              value={orgId}
+              onChange={handleOrgIdChange}
+            />
+          </div>
+          <div className="ai-interact-bulma control">
+            <a className="button ai-interact-bulma is-primary" onClick={handleSaveOrgId}>Save</a>
+          </div>
+        </div>
+      </div>
   </div>
   );
 };

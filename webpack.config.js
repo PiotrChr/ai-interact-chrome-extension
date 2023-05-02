@@ -2,6 +2,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const bulmaPath = path.resolve(__dirname, 'css/bulma.css');
+
 module.exports = (env, argv) => {
     const isDevelopment = argv.mode === 'development';
     
@@ -13,6 +15,7 @@ module.exports = (env, argv) => {
             main: './src/entrypoints/main.js',
             background: './src/entrypoints/background.js',
             popup: './src/entrypoints/popup.js',
+            conversations: './src/entrypoints/conversations.js',
         },
         output: {
             path: path.resolve(__dirname, 'build'),
@@ -29,8 +32,21 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /\.css$/,
+                    include: bulmaPath,
+                    use: [
+                      'style-loader',
+                      {
+                        loader: 'css-loader',
+                        options: { importLoaders: 1 },
+                      },
+                      'postcss-loader',
+                    ],
+                  },
+                  {
+                    test: /\.css$/,
+                    exclude: bulmaPath,
                     use: ['style-loader', 'css-loader'],
-                },                
+                  }             
             ],
         },
         resolve: {

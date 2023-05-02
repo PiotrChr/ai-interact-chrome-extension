@@ -32,18 +32,35 @@
   }
 
   .ai-interact-chrome-extension-modal-content {
-    position: relative;
+    width: 90% !important;
+    position: relative !important;
+    max-height: unset !important;
+  }
+
+  .ai-interact-chrome-extension-modal-body {
+    max-height: unset !important;
+    width: 100% !important;
   }
 
   .ai-interact-chrome-extension-modal-message pre {
-    font-family: math;
+    font-family: sans-serif;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 2rem;
+    margin: 10px 0px;
   }
 
   .ai-role-user pre {
-    margin: 10px 0px;
     font-weight: bold;
+    border: 0;
+    background-color: white;
   }
   
+  .ai-interact-chrome-extension-modal-conversation 
+  {
+    margin-top: 15px;
+  }
+
   .ai-interact-chrome-extension-closeButton {
     position: absolute;
     top: 10px;
@@ -56,10 +73,10 @@
   }
   
   #ai-interact-chrome-extension-textarea {
-    width: 100%;
-    height: 200px;
-    margin-bottom: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     resize: none;
+    box-sizing: border-box;
   }
 
   /* src/pages/Settings.css */
@@ -171,3 +188,27 @@
     }
   }
   
+  .ai-interact-chrome-extension-conversation {
+    cursor: pointer;
+  }
+
+  .ai-interact-chrome-extension-conversation:hover {
+    background-color: #f5f5f5;
+  }
+
+  .ai-interact-chrome-extension-conversation-name {
+    margin-bottom: 15px;
+  }
+
+  .ai-interact-chrome-extension-logo {
+    position: absolute;
+    left: 100px;
+    top: 15px;
+    margin-left: -64px;
+  }
+
+  .ai-interact-chrome-extension-nav {
+    margin-bottom: 70px;
+    height: 5rem;
+    background-color: #f5f5f5 !important;
+  }
